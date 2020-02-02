@@ -3,6 +3,7 @@ real angle;
 vector u;
 int wire_count;
 int driven_i;
+int segment;
 element wires[1024];
 
 void left(real da) 
@@ -23,7 +24,7 @@ element forward(real l)
 	
 	r = angle * pi / 180.0;
 	v = u + vect( 0, l * cos(r), l * sin(r));
-	w = wire( u.x, u.y, u.z, v.x, v.y, v.z, #11, 11 );
+	w = wire( u.x, u.y, u.z, v.x, v.y, v.z, #11, 13 );
 	u = v;
 	wires[wire_count] = w;
 	++wire_count;
@@ -46,7 +47,7 @@ element snowflake(real ls, int n)
 	return snowflake(ls, n - 1);
 }
 
-model ( "dipole" ) 
+model ( "koch" ) 
 {
 	element driven ;
 	real a;
@@ -55,37 +56,60 @@ model ( "dipole" )
 	angle = 0.0;
 	u = vect(0.0,0.0,0.0);	
 	
-	snowflake(Length, 3);
+	snowflake(Length, 4);
 	
 	driven = wires[driven_i];
 	
-	voltageFeedAtSegment( driven, 1.0, 0.0, 10 );
+	//wire( .1, 0, 0, .1, Length, 0, #11, 41 );
+	
+	voltageFeedAtSegment( driven, 1.0, 0.0, 1 );
 	freespace();
 	setFrequency( 145.350 );
-	frequencySweep( 144.0, 148.0, 10 );
+	//frequencySweep( 144.0, 148.0, 10 );
 } 
-
 
 
 control()
 {
-	real dy, current, previous;
+	//      L = 0.613875, swr = 1.741593
+	// best L = 0.614000, swr = 1.741667
+	//  L = 0.613687, swr = 1.594145
+	real dL, curr_swr, prev_swr, min_l, min_swr;
+	Length = 0.613562;
+	dL = 0.0005;
+	prev_swr = 9999.9;
+	min_swr = 9999.9;
+	driven_i = 22;
 	
-	dy = -0.001;
-	Length = 2.157500;
-	previous = 999.9;
-	driven_i = 23;
-	printf(" ********\n");
-	repeat (5) {
+	printf("\n***** driven_i: %i\n", driven_i);	
+	repeat(5)
+	{
 		runModel();
-		current = vswr(1);
-		printf("%f, %f\n", Length, current);
-		if (current > previous) {
-			dy = -dy *0.5; 
+		curr_swr = vswr(1);
+		printf("%f, %f\n", Length, curr_swr);
+		
+		if (curr_swr < min_swr) 
+		{
+			min_l = Length;
+			min_swr = curr_swr;
 		}
-		previous = current;
-		Length = Length + dy;
-	}	
+		
+		if (curr_swr > prev_swr) 
+		{
+			dL = - 0.5 * dL;
+		}
+		
+		
+		if (fabs(curr_swr - prev_swr)<0.00001)
+		{
+			printf("\n Converged\n");
+			break;
+		}
+		prev_swr = curr_swr;
+		
+		Length = Length + dL;
+	}
+	printf("\n\t L = %f, swr = %f\n", min_l, min_swr);
 }
 	
 	
