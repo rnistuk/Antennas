@@ -56,7 +56,7 @@ model ( "koch" )
 	angle = 0.0;
 	u = vect(0.0,0.0,0.0);	
 	
-	snowflake(Length, 4);
+	snowflake(Length, 3);
 	
 	driven = wires[driven_i];
 	
@@ -64,8 +64,8 @@ model ( "koch" )
 	
 	voltageFeedAtSegment( driven, 1.0, 0.0, 1 );
 	freespace();
-	setFrequency( 145.350 );
-	//frequencySweep( 144.0, 148.0, 10 );
+	setFrequency( 145000.0 ); //145.350
+	frequencySweep( 144000.0, 348000.0, 30 );
 } 
 
 
@@ -82,7 +82,7 @@ control()
 	driven_i = 22;
 	
 	printf("\n***** driven_i: %i\n", driven_i);	
-	repeat(5)
+	repeat(1)
 	{
 		runModel();
 		curr_swr = vswr(1);
