@@ -6,7 +6,7 @@ antennas, and I was inspired to attempt to create a model in
 cocoaNEC, a macOS application for modeling antennas 
 (http://www.w7ay.net/site/Applications/cocoaNEC/). 
 
-In my experience, most people use the spreadsheet functinality to 
+In my experience, most people use the spreadsheet functionality to 
 create the antenna models, laboriously entering the x, y and z 
 positions of each segment endpoint of their antennas. For simple
 antennas, a dipole antenna, this is fine, but when your antenna ideas
@@ -70,14 +70,3 @@ This project is licensed under the GNU Affero General Public License v3.0
 ## Acknowledgments
 
 * Advice and inspiration from the members of the [Burnaby Amateur Radio Club](http://ve7bar.org)
-
-
-
-
-
-
-
-
-
-
-
